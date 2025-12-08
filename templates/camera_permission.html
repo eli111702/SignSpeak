@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Allow Camera — Sign Interpreter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+    <!-- Load Tailwind CSS for better styling in the actual environment -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-primary-blue { background-color: #5C7CFA; }
+        .text-primary-blue { color: #5C7CFA; }
+        .card {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            background-color: #F7F7F7;
+        }
+        #preview {
+            width: 100%;
+            height: auto;
+            max-height: 240px;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+        .btn-action {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+        #btn-allow {
+            background-image: linear-gradient(135deg, #7E97FF 0%, #5C7CFA 100%);
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        #btn-skip {
+            background-color: #E0E0E0;
+            color: #5C7CFA;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body class="bg-white min-h-screen flex items-center justify-center">
+  <div class="card">
+    <h1 class="text-3xl font-extrabold text-primary-blue mb-4">Welcome to SignSpeak</h1>
+    <p class="text-gray-600 mb-6">We need access to your camera to provide live sign language interpretation.</p>
+
+    <video id="preview" autoplay playsinline></video>
+
+    <div class="space-y-3">
+      <button id="btn-allow" class="btn-action">Allow Camera</button>
+      <button id="btn-skip" class="btn-action">Skip (not recommended)</button>
+    </div>
+
+    
+<script>
+const video = document.getElementById('preview');
+const btnAllow = document.getElementById('btn-allow');
+const btnSkip = document.getElementById('btn-skip');
+
+// We use the known route for the model selection page
+const MODEL_SELECTION_URL = "/select"; 
+
+btnAllow.onclick = async () => {
+  try {
+    // 1. Attempt to get camera stream
+    const stream = await navigator.mediaDevices.getUserMedia({video:true, audio:false});
+    video.srcObject = stream;
+    
+    // 2. Stop the stream immediately after confirmation, as the camera feed
+    //    will be handled by the /video_feed route on the next page.
+    stream.getTracks().forEach(track => track.stop());
+
+    // 3. Redirect to the model selection page
+    setTimeout(()=> { window.location.href = MODEL_SELECTION_URL; }, 800);
+  } catch (e) {
+    // Replace alert() with a modal or inline message as per best practices
+    document.getElementById('error-message').textContent = "Camera access denied or not available. Please ensure your camera is not being used by another application.";
+    console.error("Camera access error:", e);
+  }
+};
+
+btnSkip.onclick = () => {
+  // Redirect to the model selection page immediately
+  window.location.href = MODEL_SELECTION_URL;
+}
+
+// Add a placeholder for error messages
+const errorContainer = document.createElement('p');
+errorContainer.id = 'error-message';
+errorContainer.className = 'text-red-500 mt-4 text-sm';
+document.querySelector('.card').appendChild(errorContainer);
+
+</script>
+</div>
+</body>
+</html>

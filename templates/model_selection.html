@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select SignSpeak Model</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Define the primary blue color for header/footer and elements */
+        .bg-primary-blue { background-color: #5C7CFA; }
+        .text-primary-blue { color: #5C7CFA; }
+
+        /* Styling for the model selection buttons, using the blue gradient from the design */
+        .model-button {
+            background-image: linear-gradient(135deg, #7E97FF 0%, #5C7CFA 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem; /* Standard rounded corners */
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s;
+            line-height: 1.5;
+            text-align: center;
+        }
+        .model-button:hover {
+            opacity: 0.95;
+            transform: scale(1.02);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Footer positioning */
+        .footer-fixed {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 0;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-white min-h-screen pt-16 pb-20">
+
+    <!-- Header (Navigation Bar) -->
+    <header class="fixed top-0 left-0 right-0 bg-primary-blue text-white shadow-lg z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
+            <div class="text-2xl font-extrabold tracking-wider">SignSpeak</div>
+            <nav class="space-x-4">
+                <a href="#" class="hover:text-gray-200 transition">Home</a>
+                <a href="#" class="hover:text-gray-200 transition">About</a>
+                <a href="#" class="hover:text-gray-200 transition">Support</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 text-center mt-10">
+        
+        <h1 class="text-4xl font-extrabold text-primary-blue mb-4">
+            Communication Instantly with SignSpeak
+        </h1>
+        <p class="text-gray-600 text-lg mb-12">
+            Choose a recognition task to begin translating sign language in real-time.
+        </p>
+
+        <!-- Model Selection Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-2xl mx-auto">
+            {% for key, model_info in models.items() %}
+            <!-- CORRECTED: Changed 'select_model' to the correct Flask endpoint 'interpret_page' -->
+            <a href="{{ url_for('interpret_page', model_key=key) }}" 
+               class="model-button">
+                
+                <span class="text-2xl block">{{ model_info.title }}</span>
+                <span class="text-sm font-light opacity-80 mt-1 block">
+                    <!-- Adding context based on key -->
+                    {% if key == 'alphabet_asl' %}
+                        (Alphabet A-Z, American Sign Language (ASL))
+                    {% elif key == 'alphabet_mysl' %}
+                        (Alphabet A-Z, Malaysian Sign Language (MySL))
+                    {% elif key == 'digits' %}
+                        (Numbers 0-10, Malaysian Sign Language (MySL))
+                    {% elif key == 'basic_mysl' %}
+                        (Basic MySL, Malaysian Sign Language (MySL))
+                    {% else %}
+                        (Model: {{ key | replace('_', ' ') | title }})
+                    {% endif %}
+                </span>
+            </a>
+            {% endfor %}
+
+            <!-- Fallback content is removed to ensure the app uses the dynamic models variable -->
+            
+        </div>
+        
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-fixed bg-primary-blue text-white text-center">
+        <p class="text-sm">&copy; 2025 SignSpeak. All rights reserved.</p>
+        <div class="text-xs mt-1">
+            <a href="#" class="underline mx-2 hover:text-gray-200">Privacy Policy</a> | 
+            <a href="#" class="underline mx-2 hover:text-gray-200">Terms of Service</a>
+        </div>
+    </footer>
+
+</body>
+</html>

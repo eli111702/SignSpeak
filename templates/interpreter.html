@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Interpreter - {{ model_key }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        #annotatedImage, #video {
+            transform: scaleX(-1); /* Mirror the video/image feed */
+            width: 100%;
+            max-width: 640px;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            /* Ensure the media element is visible initially, JS handles hiding/showing */
+            display: block; 
+        }
+        #capture {
+            display: none; /* Canvas is only used for sending frames */
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+            <a href="/select" class="text-blue-600 hover:text-blue-800 mr-4 text-xl">&larr; Back</a>
+            Live Interpretation: <span class="ml-2 capitalize text-blue-600">{{ model_key | replace('_', ' ') }}</span>
+        </h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Camera Feed (Placeholder for annotated image) -->
+            <div class="bg-white p-4 rounded-xl shadow-lg">
+                <h2 class="text-xl font-semibold mb-3 text-gray-700">Your Live Camera Feed</h2>
+                
+                <!-- Video is used to capture the stream, but hidden from view -->
+                <!-- The JS will ensure this is hidden and annotatedImage is shown -->
+                <video id="video" autoplay playsinline style="display: none;"></video>
+
+                <!-- This image will display the frame received from the backend with MediaPipe landmarks -->
+                <img id="annotatedImage" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0BMVEXx8fH///8AAgBVnNl4AAAADElEQVQI12P4wP/CAQAGgAL+n87uAAAAAElFTkSuQmCC" alt="Annotated Hand Landmarks" style="display: block;">
+                
+                <canvas id="capture" width="640" height="480"></canvas>
+                <div class="mt-4 text-sm text-gray-500">
+                    Status: <span id="status" class="font-medium text-gray-700">Initializing camera...</span>
+                </div>
+            </div>
+
+            <!-- Interpretation Result & Controls -->
+            <div class="bg-white p-6 rounded-xl shadow-lg flex flex-col justify-between">
+                <div>
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Translated Gesture</h2>
+
+                    <div class="border border-gray-200 p-4 rounded-lg bg-gray-50 mb-6">
+                        <p class="text-sm text-gray-500 mb-1">Prediction Label</p>
+                        <p id="predLabel" class="text-4xl font-extrabold text-indigo-600 truncate">---</p>
+                        <p class="text-sm text-gray-500 mt-3 mb-1">Confidence</p>
+                        <p id="predConf" class="text-xl font-bold text-green-500">0.0%</p>
+                    </div>
+
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Sequence Status</h3>
+                    <div class="flex items-center space-x-2 text-gray-600">
+                        <span class="font-bold text-2xl" id="progress">0</span> / <span class="text-lg" id="needed">30</span> Frames
+                        <span class="text-sm ml-2">(Hold the sign until the counter resets)</span>
+                    </div>
+
+                    <p class="mt-4 text-sm text-red-500">
+                        * Ensure your hand is clearly visible in the camera feed.
+                    </p>
+                </div>
+
+                <!-- Control Buttons -->
+                <div class="mt-8 pt-4 border-t border-gray-100 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                    <button id="btn-start" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-150 transform hover:scale-[1.02]">
+                        Start Interpretation
+                    </button>
+                    <button id="btn-stop" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-150 transform hover:scale-[1.02]">
+                        Stop Interpretation
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Define MODEL_KEY for JavaScript access -->
+    <script>
+        const MODEL_KEY = "{{ model_key }}";
+    </script>
+    <script src="/static/js/camera.js"></script>
+</body>
+</html>
