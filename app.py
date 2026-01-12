@@ -24,15 +24,15 @@ MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
 ALLOWED_MODELS = {
     "alphabet_asl": {
         "model": "cnn_lstm_asl_model.keras",
-        "labels": "ASL_labels1.txt"
+        "labels": "ASL_labels_cnn_lstm.npy"
     },
     "digits": {
-        "model": "digits_cnn_lstm.keras",
-        "labels": "digits_labels.npy"
+        "model": "cnn_lstm_num_model.keras",
+        "labels": "numbers_labels_cnn_lstm.npy"
     },
     "alphabet_mysl": {
-        "model": "mysl_cnn_lstm_model.keras",
-        "labels": "mysl_labels.npy"
+        "model": "cnn_lstm_MySL_model.keras",
+        "labels": "MySL_labels_cnn_lstm.npy"
     },
     "basic_mysl": {
         "model": "mysl_SW_cnn_lstm_model.keras",
